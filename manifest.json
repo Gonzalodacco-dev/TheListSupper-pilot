@@ -2,7 +2,7 @@
   "name": "The List Supper",
   "short_name": "ListSupper",
   "description": "Tu lista del super inteligente",
-  "start_url": "/",
+  "start_url": "/?v=2",
   "display": "standalone",
   "background_color": "#1a202c",
   "theme_color": "#8B5CF6",
