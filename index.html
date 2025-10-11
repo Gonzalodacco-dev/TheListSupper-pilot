@@ -1,19 +1,728 @@
+<!DOCTYPE html>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista del Super Plus</title>
-    
-    <!-- Styles -->
-    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- PWA -->
     <link rel="manifest" href="manifest.json">
-    
-    <!-- Service Worker -->
+    <style>
+        /* ===== MODO OSCURO ===== */
+        body {
+            background: #1a202c !important;
+        }
+
+        /* ===== VARIABLES ===== */
+        :root {
+            --color-pendiente: #8C8C8C;
+            --color-chango: #48C4B2;
+            --color-omitido: #F4A6A6;
+            --color-oferta: #D4B662;
+            --color-fondo: #1a202c;
+            --color-texto: #e2e8f0;
+            --color-borde: #4a5568;
+            --color-surface: #2d3748;
+            --sombra: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(rgba(26, 32, 44, 0.9), rgba(26, 32, 44, 0.95));
+            background-size: cover;
+            color: var(--color-texto);
+            min-height: 100vh;
+            padding: 20px;
+            transition: background 0.5s ease;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: var(--color-surface);
+            border-radius: 15px;
+            box-shadow: var(--sombra);
+        }
+
+        h1 {
+            color: #ffffff;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #a0aec0;
+            font-size: 1rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            background-color: #4299e1;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--sombra);
+        }
+
+        button.add-group {
+            background-color: #48bb78;
+        }
+
+        button.add-item {
+            background-color: #ed8936;
+        }
+
+        input {
+            padding: 10px 15px;
+            border: 1px solid var(--color-borde);
+            border-radius: 8px;
+            flex-grow: 1;
+            font-size: 1rem;
+            background-color: var(--color-surface);
+            color: var(--color-texto);
+        }
+
+        .groups-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .group {
+            background-color: var(--color-surface);
+            border-radius: 12px;
+            box-shadow: var(--sombra);
+            overflow: hidden;
+        }
+
+        .group-header {
+            padding: 15px;
+            background-color: #4a5568;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .group-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .group-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .group-actions button {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+
+        .group-items {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 500px;
+            overflow-y: auto;
+            transition: max-height 0.3s ease;
+        }
+
+        .group.collapsed .group-items {
+            max-height: 0;
+            padding: 0 15px;
+            overflow: hidden;
+        }
+
+        .item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            cursor: move;
+        }
+
+        .item.dragging {
+            opacity: 0.5;
+            transform: scale(0.98);
+        }
+
+        .item-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .item-color:hover {
+            transform: scale(1.2);
+        }
+
+        .item-color.pendiente {
+            background-color: var(--color-pendiente);
+            opacity: 0.85;
+        }
+
+        .item-color.chango {
+            background-color: var(--color-chango);
+            opacity: 0.85;
+        }
+
+        .item-color.omitido {
+            background-color: var(--color-omitido);
+            opacity: 0.85;
+        }
+
+        .item-color.oferta {
+            background-color: var(--color-oferta);
+            opacity: 0.85;
+        }
+
+        .item-name {
+            flex-grow: 1;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .item-actions button {
+            padding: 5px 8px;
+            font-size: 0.8rem;
+        }
+
+        .stats {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: var(--color-surface);
+            border-radius: 12px;
+            box-shadow: var(--sombra);
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #a0aec0;
+        }
+
+        .drop-zone {
+            border: 2px dashed #718096;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+            color: #a0aec0;
+        }
+
+        .drop-zone.active {
+            border-color: #4299e1;
+            background-color: rgba(66, 153, 225, 0.1);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #a0aec0;
+        }
+
+        .color-legend {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+        }
+
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+        }
+
+        .legend-color.pendiente { background-color: var(--color-pendiente); }
+        .legend-color.chango { background-color: var(--color-chango); }
+        .legend-color.omitido { background-color: var(--color-omitido); }
+        .legend-color.oferta { background-color: var(--color-oferta); }
+
+        @media (max-width: 600px) {
+            .controls {
+                flex-direction: column;
+            }
+            
+            .group-header {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            
+            .group-actions {
+                align-self: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-shopping-cart"></i> Lista del Super Plus</h1>
+            <p class="subtitle">Organiza tu compra por zonas del supermercado</p>
+            
+            <div class="color-legend">
+                <div class="legend-item">
+                    <div class="legend-color pendiente"></div>
+                    <span>Pendiente</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color chango"></div>
+                    <span>En chango</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color omitido"></div>
+                    <span>Omitido</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color oferta"></div>
+                    <span>Oferta</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="controls">
+            <button class="add-group" id="addGroupBtn">
+                <i class="fas fa-folder-plus"></i> Nuevo Grupo
+            </button>
+            <button class="add-item" id="addItemBtn">
+                <i class="fas fa-plus"></i> Nuevo Ítem
+            </button>
+            <input type="text" id="newItemInput" placeholder="Escribe un nuevo ítem...">
+        </div>
+
+        <div class="groups-container" id="groupsContainer">
+            <!-- Los grupos se agregarán aquí dinámicamente -->
+        </div>
+
+        <div class="stats" id="stats">
+            <!-- Las estadísticas se actualizarán aquí -->
+        </div>
+    </div>
+
     <script>
+        // Estado de la aplicación
+        let groups = JSON.parse(localStorage.getItem('superListGroups')) || [
+            {
+                id: 1,
+                name: "Panadería",
+                collapsed: false,
+                items: [
+                    { id: 101, name: "Pan", color: "pendiente" },
+                    { id: 102, name: "Facturas", color: "pendiente" }
+                ]
+            },
+            {
+                id: 2,
+                name: "Lácteos y Heladera",
+                collapsed: false,
+                items: [
+                    { id: 201, name: "Leche", color: "pendiente" },
+                    { id: 202, name: "Queso", color: "pendiente" },
+                    { id: 203, name: "Yogur", color: "pendiente" }
+                ]
+            },
+            {
+                id: 3,
+                name: "Limpieza",
+                collapsed: false,
+                items: [
+                    { id: 301, name: "Lavandina", color: "pendiente" },
+                    { id: 302, name: "Detergente", color: "pendiente" }
+                ]
+            }
+        ];
+
+        let nextGroupId = 4;
+        let nextItemId = 303;
+        let draggedItem = null;
+
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            renderGroups();
+            updateStats();
+            
+            // Event listeners para botones
+            document.getElementById('addGroupBtn').addEventListener('click', addNewGroup);
+            document.getElementById('addItemBtn').addEventListener('click', addNewItem);
+            document.getElementById('newItemInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addNewItem();
+                }
+            });
+        });
+
+        // Renderizar grupos
+        function renderGroups() {
+            const groupsContainer = document.getElementById('groupsContainer');
+            groupsContainer.innerHTML = '';
+
+            if (groups.length === 0) {
+                groupsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-clipboard-list fa-3x" style="margin-bottom: 15px; color: #a0aec0;"></i>
+                        <p>No hay grupos aún. ¡Crea tu primer grupo para organizar tu lista!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            groups.forEach(group => {
+                const groupElement = document.createElement('div');
+                groupElement.className = `group ${group.collapsed ? 'collapsed' : ''}`;
+                groupElement.dataset.groupId = group.id;
+                
+                groupElement.innerHTML = `
+                    <div class="group-header">
+                        <div class="group-title">
+                            <i class="fas fa-${group.collapsed ? 'chevron-down' : 'chevron-up'}"></i>
+                            <span>${group.name}</span>
+                            <span class="item-count">[${group.items.length}]</span>
+                        </div>
+                        <div class="group-actions">
+                            <button class="delete-group" title="Eliminar grupo">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="group-items">
+                        ${group.items.length > 0 ? 
+                            group.items.map(item => `
+                                <div class="item" draggable="true" data-item-id="${item.id}" data-group-id="${group.id}">
+                                    <div class="item-color ${item.color}" data-item-id="${item.id}"></div>
+                                    <div class="item-name">${item.name}</div>
+                                    <div class="item-actions">
+                                        <button class="delete-item" title="Eliminar ítem">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('') : 
+                            '<div class="empty-state">No hay ítems en este grupo</div>'
+                        }
+                        <div class="drop-zone" data-group-id="${group.id}">
+                            Arrastra ítems aquí para moverlos
+                        </div>
+                    </div>
+                `;
+                
+                groupsContainer.appendChild(groupElement);
+            });
+
+            // Añadir event listeners después de renderizar
+            addGroupEventListeners();
+            addDragAndDropListeners();
+        }
+
+        // Añadir event listeners a los grupos
+        function addGroupEventListeners() {
+            // Toggle colapsar/expandir grupo
+            document.querySelectorAll('.group-header').forEach(header => {
+                header.addEventListener('click', function(e) {
+                    if (!e.target.closest('.group-actions')) {
+                        const groupId = parseInt(this.closest('.group').dataset.groupId);
+                        toggleGroupCollapse(groupId);
+                    }
+                });
+            });
+
+            // Eliminar grupo
+            document.querySelectorAll('.delete-group').forEach(button => {
+                button.addEventListener('click', function() {
+                    const groupId = parseInt(this.closest('.group').dataset.groupId);
+                    deleteGroup(groupId);
+                });
+            });
+
+            // Cambiar color del ítem
+            document.querySelectorAll('.item-color').forEach(colorElement => {
+                colorElement.addEventListener('click', function() {
+                    const itemId = parseInt(this.dataset.itemId);
+                    changeItemColor(itemId);
+                });
+            });
+
+            // Eliminar ítem
+            document.querySelectorAll('.delete-item').forEach(button => {
+                button.addEventListener('click', function() {
+                    const itemId = parseInt(this.closest('.item').dataset.itemId);
+                    const groupId = parseInt(this.closest('.item').dataset.groupId);
+                    deleteItem(groupId, itemId);
+                });
+            });
+        }
+
+        // Añadir funcionalidad de arrastrar y soltar
+        function addDragAndDropListeners() {
+            // Ítems arrastrables
+            document.querySelectorAll('.item').forEach(item => {
+                item.addEventListener('dragstart', function(e) {
+                    draggedItem = {
+                        itemId: parseInt(this.dataset.itemId),
+                        groupId: parseInt(this.dataset.groupId)
+                    };
+                    this.classList.add('dragging');
+                    e.dataTransfer.setData('text/plain', '');
+                });
+
+                item.addEventListener('dragend', function() {
+                    this.classList.remove('dragging');
+                    document.querySelectorAll('.drop-zone').forEach(zone => {
+                        zone.classList.remove('active');
+                    });
+                });
+            });
+
+            // Zonas de destino
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.classList.add('active');
+                });
+
+                zone.addEventListener('dragleave', function() {
+                    this.classList.remove('active');
+                });
+
+                zone.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('active');
+                    
+                    if (draggedItem) {
+                        const targetGroupId = parseInt(this.dataset.groupId);
+                        moveItemToGroup(draggedItem.groupId, draggedItem.itemId, targetGroupId);
+                        draggedItem = null;
+                    }
+                });
+            });
+        }
+
+        // Funciones de la aplicación
+        function addNewGroup() {
+            const groupName = prompt("Nombre del nuevo grupo:");
+            if (groupName && groupName.trim() !== '') {
+                groups.push({
+                    id: nextGroupId++,
+                    name: groupName.trim(),
+                    collapsed: false,
+                    items: []
+                });
+                saveToLocalStorage();
+                renderGroups();
+            }
+        }
+
+        function addNewItem() {
+            const itemInput = document.getElementById('newItemInput');
+            const itemName = itemInput.value.trim();
+            
+            if (itemName === '') {
+                alert("Por favor, escribe un nombre para el ítem.");
+                return;
+            }
+
+            if (groups.length > 0) {
+                const firstGroup = groups[0];
+                firstGroup.items.push({
+                    id: nextItemId++,
+                    name: itemName,
+                    color: 'pendiente'
+                });
+                
+                saveToLocalStorage();
+                renderGroups();
+                updateStats();
+                itemInput.value = '';
+            } else {
+                alert("Primero crea un grupo para agregar ítems.");
+            }
+        }
+
+        function toggleGroupCollapse(groupId) {
+            const group = groups.find(g => g.id === groupId);
+            if (group) {
+                group.collapsed = !group.collapsed;
+                saveToLocalStorage();
+                renderGroups();
+            }
+        }
+
+        function deleteGroup(groupId) {
+            if (confirm("¿Estás seguro de que quieres eliminar este grupo y todos sus ítems?")) {
+                groups = groups.filter(g => g.id !== groupId);
+                saveToLocalStorage();
+                renderGroups();
+                updateStats();
+            }
+        }
+
+        function changeItemColor(itemId) {
+            const colors = ['pendiente', 'chango', 'omitido', 'oferta'];
+            let item = null;
+            let group = null;
+            
+            for (const g of groups) {
+                item = g.items.find(i => i.id === itemId);
+                if (item) {
+                    group = g;
+                    break;
+                }
+            }
+            
+            if (item) {
+                const currentColorIndex = colors.indexOf(item.color);
+                const nextColorIndex = (currentColorIndex + 1) % colors.length;
+                item.color = colors[nextColorIndex];
+                
+                saveToLocalStorage();
+                renderGroups();
+                updateStats();
+            }
+        }
+
+        function deleteItem(groupId, itemId) {
+            const group = groups.find(g => g.id === groupId);
+            if (group) {
+                group.items = group.items.filter(i => i.id !== itemId);
+                saveToLocalStorage();
+                renderGroups();
+                updateStats();
+            }
+        }
+
+        function moveItemToGroup(sourceGroupId, itemId, targetGroupId) {
+            if (sourceGroupId === targetGroupId) return;
+            
+            const sourceGroup = groups.find(g => g.id === sourceGroupId);
+            const targetGroup = groups.find(g => g.id === targetGroupId);
+            
+            if (sourceGroup && targetGroup) {
+                const itemIndex = sourceGroup.items.findIndex(i => i.id === itemId);
+                if (itemIndex !== -1) {
+                    const [item] = sourceGroup.items.splice(itemIndex, 1);
+                    targetGroup.items.push(item);
+                    
+                    saveToLocalStorage();
+                    renderGroups();
+                    updateStats();
+                }
+            }
+        }
+
+        function updateStats() {
+            let totalItems = 0;
+            let pendientes = 0;
+            let enChango = 0;
+            let omitidos = 0;
+            let ofertas = 0;
+            
+            groups.forEach(group => {
+                totalItems += group.items.length;
+                group.items.forEach(item => {
+                    switch(item.color) {
+                        case 'pendiente': pendientes++; break;
+                        case 'chango': enChango++; break;
+                        case 'omitido': omitidos++; break;
+                        case 'oferta': ofertas++; break;
+                    }
+                });
+            });
+            
+            const statsElement = document.getElementById('stats');
+            statsElement.innerHTML = `
+                <div class="stat">
+                    <div class="stat-value">${totalItems}</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">${pendientes}</div>
+                    <div class="stat-label">Pendientes</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">${enChango}</div>
+                    <div class="stat-label">En chango</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">${omitidos}</div>
+                    <div class="stat-label">Omitidos</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">${ofertas}</div>
+                    <div class="stat-label">Ofertas</div>
+                </div>
+            `;
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('superListGroups', JSON.stringify(groups));
+        }
+
+        // Service Worker
         if('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js');
         }
     </script>
-</head>
+</body>
+</html>
