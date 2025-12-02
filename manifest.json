@@ -1,14 +1,16 @@
 {
-  "name": "The List Supper",
-  "short_name": "ListSupper",
-  "description": "Tu lista del super inteligente",
-  "start_url": "/?v=2",
+  "name": "The List Supper™",
+  "short_name": "ListSupper™",
+  "description": "Lista del super rápida - Sin permisos molestos",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#1a202c",
-  "theme_color": "#8B5CF6",
+  "theme_color": "#48bb78",
+  "orientation": "portrait",
+  "categories": ["shopping", "productivity"],
   "icons": [
     {
-      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjE5MiIgaGVpZ2h0PSIxOTIiIGZpbGw9IiNGRkZGRkYiIHJ4PSIyNCIvPjxwYXRoIGQ9Ik03NiA1NkgxMTZDMTIyIDU2IDEyNyA2MSAxMjcgNjdWMTI2QzEyNyAxMzIgMTIyIDEzNyAxMTYgMTM3SDc2QzcwIDEzNyA2NSAxMzIgNjUgMTI2VjY3QzY1IDYxIDcwIDU2IDc2IDU2WiIgZmlsbD0iIzhiNWNmNiIvPjxwYXRoIGQ9Ik04NSA4NUgxMDdWMTA3SDg1Vjg1WiIgZmlsbD0iI2ZmZmZmZiIvPjwvc3ZnPg==",
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9IiM0OGJiNzgiLz4KPHN2ZyB4PSI0OCIgeT0iNDgiIHdpZHRoPSI5NiIgaGVpZ2h0PSI5NiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiPgo8cGF0aCBkPSJNMyAzaDN2M0gzVjN6bTAgNmgzdjNIM1Y5em0wIDZoM3YzSDN2LTN6bTYtNmgzdjNIOVY5em0wIDZoM3YzSDl2LTN6bTAgNmgzdjNIOXYtM3ptNi02aDN2M2gtM1Y5em0wIDZoM3YzaC0zdi0zem0wIDZoM3YzaC0zdi0zeiIvPgo8L3N2Zz4KPC9zdmc+",
       "sizes": "192x192",
       "type": "image/svg+xml"
     }

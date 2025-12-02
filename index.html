@@ -3,16 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista del Super Plus</title>
+    <title>The List Supper™</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="manifest" href="manifest.json">
     <style>
-        /* ===== MODO OSCURO ===== */
-        body {
-            background: #1a202c !important;
-        }
-
-        /* ===== VARIABLES ===== */
         :root {
             --color-pendiente: #8C8C8C;
             --color-chango: #48C4B2;
@@ -22,6 +16,9 @@
             --color-texto: #e2e8f0;
             --color-borde: #4a5568;
             --color-surface: #2d3748;
+            --color-grupo-header: #4a5568;
+            --color-grupo-items: #2d3748;
+            --color-item-fondo: rgba(255, 255, 255, 0.1);
             --sombra: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
 
@@ -33,12 +30,11 @@
         }
 
         body {
-            background: linear-gradient(rgba(26, 32, 44, 0.9), rgba(26, 32, 44, 0.95));
-            background-size: cover;
+            background: var(--color-fondo);
             color: var(--color-texto);
             min-height: 100vh;
             padding: 20px;
-            transition: background 0.5s ease;
+            transition: all 0.3s ease;
         }
 
         .container {
@@ -93,7 +89,9 @@
         }
 
         button.add-group {
-            background-color: #48bb78;
+            background-color: transparent;
+            border: 2px solid #48bb78;
+            color: #48bb78;
         }
 
         button.add-item {
@@ -108,6 +106,10 @@
             font-size: 1rem;
             background-color: var(--color-surface);
             color: var(--color-texto);
+        }
+
+        input::placeholder {
+            color: #a0aec0;
         }
 
         .groups-container {
@@ -125,7 +127,7 @@
 
         .group-header {
             padding: 15px;
-            background-color: #4a5568;
+            background-color: var(--color-grupo-header);
             color: white;
             display: flex;
             justify-content: space-between;
@@ -137,6 +139,11 @@
             display: flex;
             align-items: center;
             gap: 10px;
+        }
+
+        .group-title span {
+            font-weight: bold;
+            text-transform: uppercase;
         }
 
         .group-actions {
@@ -157,6 +164,7 @@
             max-height: 500px;
             overflow-y: auto;
             transition: max-height 0.3s ease;
+            background-color: var(--color-grupo-items);
         }
 
         .group.collapsed .group-items {
@@ -171,7 +179,7 @@
             gap: 10px;
             padding: 12px;
             border-radius: 8px;
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: var(--color-item-fondo);
             transition: all 0.3s ease;
             cursor: move;
         }
@@ -215,6 +223,7 @@
 
         .item-name {
             flex-grow: 1;
+            font-weight: bold;
         }
 
         .item-actions {
@@ -300,6 +309,123 @@
         .legend-color.omitido { background-color: var(--color-omitido); }
         .legend-color.oferta { background-color: var(--color-oferta); }
 
+        /* PANEL ADMIN ESTILOS */
+        .admin-panel {
+            background: var(--color-surface);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--sombra);
+            border: 2px solid #48bb78;
+        }
+
+        .admin-title {
+            color: #48bb78;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .admin-btn {
+            background: #4299e1;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .admin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--sombra);
+        }
+
+        .admin-btn.danger {
+            background: #e53e3e;
+        }
+
+        .admin-btn.success {
+            background: #48bb78;
+        }
+
+        .admin-btn.warning {
+            background: #ed8936;
+        }
+
+        .admin-btn.voz {
+            background: #9F7AEA;
+        }
+
+        .color-picker-panel {
+            background: var(--color-surface);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: var(--sombra);
+            border: 2px solid #9F7AEA;
+        }
+
+        .color-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .color-control label {
+            min-width: 150px;
+            color: var(--color-texto);
+        }
+
+        .color-preview {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            border: 2px solid white;
+        }
+
+        .stats-panel {
+            background: var(--color-surface);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: var(--sombra);
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .secret-trigger {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: transparent;
+            border: none;
+            color: transparent;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            z-index: 10000;
+        }
+
         @media (max-width: 600px) {
             .controls {
                 flex-direction: column;
@@ -314,13 +440,19 @@
             .group-actions {
                 align-self: flex-end;
             }
+
+            .admin-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
+    <button class="secret-trigger" id="secretTrigger" title="Panel Admin"></button>
+
     <div class="container">
         <header>
-            <h1><i class="fas fa-shopping-cart"></i> Lista del Super Plus</h1>
+            <h1><i class="fas fa-shopping-cart"></i> The List Supper™</h1>
             <p class="subtitle">Organiza tu compra por zonas del supermercado</p>
             
             <div class="color-legend">
@@ -343,6 +475,102 @@
             </div>
         </header>
 
+        <!-- PANEL DE ADMIN (OCULTO INICIALMENTE) -->
+        <div class="admin-panel hidden" id="adminPanel">
+            <h2 class="admin-title">🛠️ PANEL DE CONTROL - THE LIST SUPPER™</h2>
+            
+            <div class="admin-grid">
+                <button class="admin-btn success" onclick="admin.agregarOfertas()">
+                    🎁 Agregar Ofertas
+                </button>
+                
+                <button class="admin-btn" onclick="admin.modoArcoiris()">
+                    🌈 Modo Arcoíris
+                </button>
+                
+                <button class="admin-btn warning" onclick="admin.duplicarItems()">
+                    📦 Duplicar Items
+                </button>
+                
+                <button class="admin-btn" onclick="admin.exportarDatos()">
+                    💾 Exportar Datos
+                </button>
+                
+                <button class="admin-btn danger" onclick="admin.limpiarTodo()">
+                    🗑️ Limpiar Todo
+                </button>
+
+                <button class="admin-btn" onclick="admin.crearGruposEjemplo()">
+                    🏪 Grupos Ejemplo
+                </button>
+
+                <button class="admin-btn" onclick="admin.modoNormal()">
+                    ⬛ Modo Normal
+                </button>
+
+                <button class="admin-btn voz" onclick="admin.togglePersonalizacion()">
+                    🎨 Personalizar Colores
+                </button>
+            </div>
+
+            <!-- PANEL DE PERSONALIZACIÓN DE COLORES -->
+            <div class="color-picker-panel hidden" id="colorPanel">
+                <h3>🎨 PERSONALIZAR COLORES</h3>
+                
+                <div class="color-control">
+                    <label>Fondo principal:</label>
+                    <input type="color" id="colorFondo" value="#1a202c" onchange="admin.aplicarColores()">
+                    <div class="color-preview" style="background-color: #1a202c"></div>
+                </div>
+
+                <div class="color-control">
+                    <label>Color de texto:</label>
+                    <input type="color" id="colorTexto" value="#e2e8f0" onchange="admin.aplicarColores()">
+                    <div class="color-preview" style="background-color: #e2e8f0"></div>
+                </div>
+
+                <div class="color-control">
+                    <label>Fondo grupos (header):</label>
+                    <input type="color" id="colorGrupoHeader" value="#4a5568" onchange="admin.aplicarColores()">
+                    <div class="color-preview" style="background-color: #4a5568"></div>
+                </div>
+
+                <div class="color-control">
+                    <label>Fondo grupos (items):</label>
+                    <input type="color" id="colorGrupoItems" value="#2d3748" onchange="admin.aplicarColores()">
+                    <div class="color-preview" style="background-color: #2d3748"></div>
+                </div>
+
+                <div class="color-control">
+                    <label>Fondo ítems:</label>
+                    <input type="color" id="colorItemFondo" value="#2d3748" onchange="admin.aplicarColores()">
+                    <div class="color-preview" style="background-color: #2d3748"></div>
+                </div>
+
+                <div class="color-control">
+                    <label>Color pendiente:</label>
+                    <input type="color" id="colorPendiente" value="#8C8C8C" onchange="admin.aplicarColores()">
+                    <div class="color-preview" style="background-color: #8C8C8C"></div>
+                </div>
+
+                <div class="color-control">
+                    <label>Color chango:</label>
+                    <input type="color" id="colorChango" value="#48C4B2" onchange="admin.aplicarColores()">
+                    <div class="color-preview" style="background-color: #48C4B2"></div>
+                </div>
+
+                <button class="admin-btn" onclick="admin.guardarColores()" style="margin-top: 15px;">
+                    💾 Guardar Colores
+                </button>
+            </div>
+
+            <!-- ESTADÍSTICAS EN TIEMPO REAL -->
+            <div class="stats-panel">
+                <h3>📊 ESTADÍSTICAS EN TIEMPO REAL</h3>
+                <div id="liveStats"></div>
+            </div>
+        </div>
+
         <div class="controls">
             <button class="add-group" id="addGroupBtn">
                 <i class="fas fa-folder-plus"></i> Nuevo Grupo
@@ -363,11 +591,243 @@
     </div>
 
     <script>
-        // Estado de la aplicación
+        // =============================================
+        // ADMIN CONTROLLER - PANEL DE CONTROL SECRETO
+        // =============================================
+        const admin = {
+            togglePanel: function() {
+                const panel = document.getElementById('adminPanel');
+                panel.classList.toggle('hidden');
+                if(!panel.classList.contains('hidden')) {
+                    this.actualizarEstadisticas();
+                    this.cargarColoresGuardados();
+                }
+            },
+
+            togglePersonalizacion: function() {
+                const colorPanel = document.getElementById('colorPanel');
+                colorPanel.classList.toggle('hidden');
+            },
+
+            cargarColoresGuardados: function() {
+                const colores = JSON.parse(localStorage.getItem('theListSupperColors')) || {};
+                
+                if (colores.colorFondo) {
+                    document.getElementById('colorFondo').value = colores.colorFondo;
+                    document.getElementById('colorTexto').value = colores.colorTexto;
+                    document.getElementById('colorGrupoHeader').value = colores.colorGrupoHeader;
+                    document.getElementById('colorGrupoItems').value = colores.colorGrupoItems;
+                    document.getElementById('colorItemFondo').value = colores.colorItemFondo;
+                    document.getElementById('colorPendiente').value = colores.colorPendiente;
+                    document.getElementById('colorChango').value = colores.colorChango;
+                    
+                    this.aplicarColores();
+                }
+            },
+
+            aplicarColores: function() {
+                const root = document.documentElement;
+                
+                root.style.setProperty('--color-fondo', document.getElementById('colorFondo').value);
+                root.style.setProperty('--color-texto', document.getElementById('colorTexto').value);
+                root.style.setProperty('--color-grupo-header', document.getElementById('colorGrupoHeader').value);
+                root.style.setProperty('--color-grupo-items', document.getElementById('colorGrupoItems').value);
+                root.style.setProperty('--color-item-fondo', document.getElementById('colorItemFondo').value + '1a'); // Agrega transparencia
+                root.style.setProperty('--color-pendiente', document.getElementById('colorPendiente').value);
+                root.style.setProperty('--color-chango', document.getElementById('colorChango').value);
+            },
+
+            guardarColores: function() {
+                const colores = {
+                    colorFondo: document.getElementById('colorFondo').value,
+                    colorTexto: document.getElementById('colorTexto').value,
+                    colorGrupoHeader: document.getElementById('colorGrupoHeader').value,
+                    colorGrupoItems: document.getElementById('colorGrupoItems').value,
+                    colorItemFondo: document.getElementById('colorItemFondo').value,
+                    colorPendiente: document.getElementById('colorPendiente').value,
+                    colorChango: document.getElementById('colorChango').value
+                };
+                
+                localStorage.setItem('theListSupperColors', JSON.stringify(colores));
+                alert('🎨 Colores guardados!');
+            },
+
+            actualizarEstadisticas: function() {
+                const groups = JSON.parse(localStorage.getItem('superListGroups')) || [];
+                let totalItems = 0;
+                let porColor = { pendiente: 0, chango: 0, omitido: 0, oferta: 0 };
+                
+                groups.forEach(group => {
+                    totalItems += group.items.length;
+                    group.items.forEach(item => {
+                        porColor[item.color] = (porColor[item.color] || 0) + 1;
+                    });
+                });
+
+                document.getElementById('liveStats').innerHTML = `
+                    <div class="stat-item">
+                        <span>📦 Total Items:</span>
+                        <strong>${totalItems}</strong>
+                    </div>
+                    <div class="stat-item">
+                        <span>📁 Total Grupos:</span>
+                        <strong>${groups.length}</strong>
+                    </div>
+                    <div class="stat-item">
+                        <span>⏳ Pendientes:</span>
+                        <strong>${porColor.pendiente}</strong>
+                    </div>
+                    <div class="stat-item">
+                        <span>🛒 En Chango:</span>
+                        <strong>${porColor.chango}</strong>
+                    </div>
+                    <div class="stat-item">
+                        <span>💡 Ofertas:</span>
+                        <strong>${porColor.oferta}</strong>
+                    </div>
+                `;
+            },
+
+            agregarOfertas: function() {
+                const ofertas = [
+                    "🍫 CHOCOLATE 50% OFF", 
+                    "🥛 LECHE 2x1", 
+                    "🍞 PAN FRESCO OFERTA",
+                    "🍎 FRUTA DE TEMPORADA",
+                    "🍪 GALLETITAS PROMO",
+                    "☕ CAFÉ EN OFERTA",
+                    "🥩 CARNE ESPECIAL",
+                    "🍺 CERVEZA PROMO"
+                ];
+                
+                const groups = JSON.parse(localStorage.getItem('superListGroups')) || [];
+                if(groups.length === 0) return alert('Primero creá un grupo');
+                
+                for(let i = 0; i < 3; i++) {
+                    const oferta = ofertas[Math.floor(Math.random() * ofertas.length)];
+                    groups[0].items.push({
+                        id: Date.now() + Math.random(),
+                        name: oferta,
+                        color: 'oferta'
+                    });
+                }
+                
+                localStorage.setItem('superListGroups', JSON.stringify(groups));
+                alert('🎁 ¡Ofertas agregadas! Recargando...');
+                setTimeout(() => location.reload(), 1000);
+            },
+
+            modoArcoiris: function() {
+                document.body.style.background = 'linear-gradient(45deg, #ff0000, #ff8000, #ffff00, #00ff00, #0000ff, #8000ff)';
+                document.body.style.backgroundSize = '400% 400%';
+                document.body.style.animation = 'arcoiris 10s ease infinite';
+                
+                const style = document.createElement('style');
+                style.innerHTML = `
+                    @keyframes arcoiris {
+                        0% { background-position: 0% 50% }
+                        50% { background-position: 100% 50% }
+                        100% { background-position: 0% 50% }
+                    }
+                `;
+                document.head.appendChild(style);
+                
+                alert('🌈 ¡Modo arcoíris activado!');
+            },
+
+            modoNormal: function() {
+                document.body.style.background = '';
+                document.body.style.animation = 'none';
+                this.cargarColoresGuardados();
+                alert('⬛ ¡Modo normal activado!');
+            },
+
+            duplicarItems: function() {
+                const groups = JSON.parse(localStorage.getItem('superListGroups')) || [];
+                groups.forEach(group => {
+                    const originalItems = [...group.items];
+                    group.items = [...group.items, ...originalItems.map(item => ({
+                        ...item,
+                        id: Date.now() + Math.random()
+                    }))];
+                });
+                
+                localStorage.setItem('superListGroups', JSON.stringify(groups));
+                alert('📦 ¡Items duplicados! Recargando...');
+                setTimeout(() => location.reload(), 1000);
+            },
+
+            exportarDatos: function() {
+                const groups = JSON.parse(localStorage.getItem('superListGroups')) || [];
+                const datos = JSON.stringify(groups, null, 2);
+                const blob = new Blob([datos], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'lista_super_backup.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                alert('💾 ¡Datos exportados!');
+            },
+
+            limpiarTodo: function() {
+                if(confirm('¿ESTÁS SEGURO? Se borrarán TODOS los datos.')) {
+                    localStorage.removeItem('superListGroups');
+                    alert('🗑️ ¡Todo limpiado! Recargando...');
+                    setTimeout(() => location.reload(), 1000);
+                }
+            },
+
+            crearGruposEjemplo: function() {
+                const gruposEjemplo = [
+                    {
+                        id: 1,
+                        name: "PANADERÍA",
+                        collapsed: false,
+                        items: [
+                            { id: 101, name: "Pan", color: "pendiente" },
+                            { id: 102, name: "Facturas", color: "pendiente" },
+                            { id: 103, name: "Medialunas", color: "chango" }
+                        ]
+                    },
+                    {
+                        id: 2,
+                        name: "LÁCTEOS",
+                        collapsed: false,
+                        items: [
+                            { id: 201, name: "Leche", color: "pendiente" },
+                            { id: 202, name: "Queso", color: "chango" },
+                            { id: 203, name: "Yogur", color: "pendiente" }
+                        ]
+                    },
+                    {
+                        id: 3,
+                        name: "LIMPIEZA",
+                        collapsed: false,
+                        items: [
+                            { id: 301, name: "Detergente", color: "pendiente" },
+                            { id: 302, name: "Lavandina", color: "oferta" }
+                        ]
+                    }
+                ];
+                
+                localStorage.setItem('superListGroups', JSON.stringify(gruposEjemplo));
+                alert('🏪 ¡Grupos de ejemplo creados! Recargando...');
+                setTimeout(() => location.reload(), 1000);
+            }
+        };
+
+        // =============================================
+        // APP PRINCIPAL - LISTA DEL SUPER
+        // =============================================
         let groups = JSON.parse(localStorage.getItem('superListGroups')) || [
             {
                 id: 1,
-                name: "Panadería",
+                name: "PANADERÍA",
                 collapsed: false,
                 items: [
                     { id: 101, name: "Pan", color: "pendiente" },
@@ -376,7 +836,7 @@
             },
             {
                 id: 2,
-                name: "Lácteos y Heladera",
+                name: "LÁCTEOS Y HELADERA",
                 collapsed: false,
                 items: [
                     { id: 201, name: "Leche", color: "pendiente" },
@@ -386,7 +846,7 @@
             },
             {
                 id: 3,
-                name: "Limpieza",
+                name: "LIMPIEZA",
                 collapsed: false,
                 items: [
                     { id: 301, name: "Lavandina", color: "pendiente" },
@@ -404,6 +864,9 @@
             renderGroups();
             updateStats();
             
+            // Cargar colores personalizados si existen
+            admin.cargarColoresGuardados();
+            
             // Event listeners para botones
             document.getElementById('addGroupBtn').addEventListener('click', addNewGroup);
             document.getElementById('addItemBtn').addEventListener('click', addNewItem);
@@ -412,6 +875,21 @@
                     addNewItem();
                 }
             });
+
+            // ACTIVADOR PANEL ADMIN
+            document.getElementById('secretTrigger').addEventListener('click', function() {
+                admin.togglePanel();
+            });
+
+            // ACTIVAR CON TECLADO (Ctrl + Shift + A)
+            document.addEventListener('keydown', function(e) {
+                if(e.ctrlKey && e.shiftKey && e.key === 'A') {
+                    e.preventDefault();
+                    admin.togglePanel();
+                }
+            });
+
+            console.log('🚀 The List Supper™ cargado - SIN PERMISOS MOLESTOS!');
         });
 
         // Renderizar grupos
@@ -424,6 +902,9 @@
                     <div class="empty-state">
                         <i class="fas fa-clipboard-list fa-3x" style="margin-bottom: 15px; color: #a0aec0;"></i>
                         <p>No hay grupos aún. ¡Crea tu primer grupo para organizar tu lista!</p>
+                        <button onclick="admin.crearGruposEjemplo()" style="margin-top: 15px;" class="admin-btn">
+                            🏪 Cargar Grupos de Ejemplo
+                        </button>
                     </div>
                 `;
                 return;
@@ -565,7 +1046,7 @@
             if (groupName && groupName.trim() !== '') {
                 groups.push({
                     id: nextGroupId++,
-                    name: groupName.trim(),
+                    name: groupName.trim().toUpperCase(),
                     collapsed: false,
                     items: []
                 });
@@ -584,8 +1065,7 @@
             }
 
             if (groups.length > 0) {
-                const firstGroup = groups[0];
-                firstGroup.items.push({
+                groups[0].items.push({
                     id: nextItemId++,
                     name: itemName,
                     color: 'pendiente'
@@ -719,9 +1199,11 @@
             localStorage.setItem('superListGroups', JSON.stringify(groups));
         }
 
-        // Service Worker
+        // Service Worker SIN notificaciones molestas
         if('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js');
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => console.log('✅ Service Worker registrado (sin permisos)'))
+                .catch(error => console.log('❌ Error Service Worker:', error));
         }
     </script>
 </body>
