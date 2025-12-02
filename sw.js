@@ -1,63 +1,109 @@
-// Service Worker - The List Supper™ v2025.1 (Cache Control)
-const APP_VERSION = '2025.1.0';
-const CACHE_NAME = `the-list-supper-${APP_VERSION}`;
-const urlsToCache = ['/', '/index.html'];
+// Service Worker - The List Supper™ v2025.2.0 (Cache Killer Edition)
+const APP_VERSION = '2025.2.0';
+const CACHE_NAME = `list-supper-${APP_VERSION}`;
+
+// ARCHIVOS CRÍTICOS - SOLO LO ESENCIAL
+const CRITICAL_ASSETS = [
+  '/',
+  '/index.html',
+  '/manifest.json'
+];
 
 self.addEventListener('install', event => {
-  console.log('🛠️ Service Worker instalado - The List Supper™ v' + APP_VERSION);
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      console.log('📦 Cacheando archivos:', urlsToCache);
-      return cache.addAll(urlsToCache);
-    })
-  );
-  // Forzar activación inmediata
+  console.log(`🛠️ SW v${APP_VERSION} instalando...`);
+  
+  // SKIP WAITING INMEDIATAMENTE - No esperar a activarse
   self.skipWaiting();
-});
-
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request).then(response => {
-      // Primero, intentar con network, luego con cache
-      return response || fetch(event.request).then(fetchResponse => {
-        // Cachear nuevas respuestas
-        return caches.open(CACHE_NAME).then(cache => {
-          cache.put(event.request, fetchResponse.clone());
-          return fetchResponse;
-        });
-      });
-    }).catch(() => {
-      // Fallback para offline
-      return caches.match('/index.html');
-    })
+  
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('📦 Cacheando assets críticos:', CRITICAL_ASSETS);
+        return cache.addAll(CRITICAL_ASSETS);
+      })
+      .then(() => {
+        console.log('✅ Instalación completada');
+      })
   );
 });
 
 self.addEventListener('activate', event => {
-  console.log('🚀 Service Worker activado - Limpiando caches viejos');
+  console.log(`🚀 SW v${APP_VERSION} activado - Limpieza nuclear`);
+  
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          // Eliminar TODOS los caches viejos
-          if (cacheName !== CACHE_NAME) {
-            console.log('🗑️ Eliminando cache viejo:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => {
-      // Tomar control inmediato de todos los clients
-      return self.clients.claim();
+    Promise.all([
+      // 1. ELIMINAR TODOS los caches viejos SIN EXCEPCIÓN
+      caches.keys().then(cacheNames => {
+        return Promise.all(
+          cacheNames.map(cacheName => {
+            if (cacheName !== CACHE_NAME) {
+              console.log(`🗑️ ELIMINANDO CACHE VIEJO: ${cacheName}`);
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      }),
+      
+      // 2. TOMAR CONTROL INMEDIATO de todas las pestañas
+      self.clients.claim(),
+      
+      // 3. Notificar a todos los clients que se actualicen
+      self.clients.matchAll().then(clients => {
+        clients.forEach(client => {
+          client.postMessage({
+            type: 'SW_UPDATED',
+            version: APP_VERSION
+          });
+        });
+      })
+    ]).then(() => {
+      console.log('🔥 Activación nuclear completada');
     })
   );
 });
 
-// Permitir skipWaiting desde la página
+self.addEventListener('fetch', event => {
+  // ESTRATEGIA: Network First, THEN cache
+  event.respondWith(
+    fetch(event.request)
+      .then(networkResponse => {
+        // Si hay respuesta de red, actualizar cache
+        if (event.request.method === 'GET') {
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseClone);
+          });
+        }
+        return networkResponse;
+      })
+      .catch(() => {
+        // Fallback a cache SOLO si falla la red
+        return caches.match(event.request)
+          .then(cachedResponse => {
+            return cachedResponse || caches.match('/index.html');
+          });
+      })
+  );
+});
+
+// COMUNICACIÓN CON LA PÁGINA
 self.addEventListener('message', event => {
-  if (event.data === 'skipWaiting') {
-    self.skipWaiting();
+  switch (event.data) {
+    case 'skipWaiting':
+      self.skipWaiting();
+      break;
+      
+    case 'getVersion':
+      event.ports[0].postMessage({ version: APP_VERSION });
+      break;
+      
+    case 'clearAllCaches':
+      caches.keys().then(keys => {
+        keys.forEach(key => caches.delete(key));
+        event.ports[0].postMessage({ cleared: keys.length });
+      });
+      break;
   }
 });
 
-// ❌ ELIMINADO: Todo el código de notificaciones push
+console.log(`⚡ The List Supper™ Service Worker v${APP_VERSION} cargado`);

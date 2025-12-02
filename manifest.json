@@ -1,8 +1,8 @@
 {
   "name": "The List Supper™",
   "short_name": "ListSupper™",
-  "description": "Organiza tu compra por zonas del supermercado - © 2025",
-  "start_url": "/",
+  "description": "Organiza tu compra por zonas del supermercado - v2025.2.0",
+  "start_url": "/?v=2025.2.0",
   "display": "standalone",
   "background_color": "#1a202c",
   "theme_color": "#48bb78",
