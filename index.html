@@ -57,6 +57,12 @@
             margin-bottom: 10px;
         }
 
+        .title-tm {
+            font-size: 0.8em;
+            vertical-align: super;
+            color: #48bb78;
+        }
+
         .subtitle {
             color: #a0aec0;
             font-size: 1rem;
@@ -426,6 +432,18 @@
             z-index: 10000;
         }
 
+        /* Botón para limpiar cache */
+        .cache-btn {
+            background: #D69E2E;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
         @media (max-width: 600px) {
             .controls {
                 flex-direction: column;
@@ -452,7 +470,7 @@
 
     <div class="container">
         <header>
-            <h1><i class="fas fa-shopping-cart"></i> The List Supper™</h1>
+            <h1><i class="fas fa-shopping-cart"></i> The List Supper<span class="title-tm">™</span></h1>
             <p class="subtitle">Organiza tu compra por zonas del supermercado</p>
             
             <div class="color-legend">
@@ -511,6 +529,10 @@
                 <button class="admin-btn voz" onclick="admin.togglePersonalizacion()">
                     🎨 Personalizar Colores
                 </button>
+
+                <button class="admin-btn warning" onclick="admin.limpiarCache()">
+                    🔧 Limpiar Cache
+                </button>
             </div>
 
             <!-- PANEL DE PERSONALIZACIÓN DE COLORES -->
@@ -568,6 +590,9 @@
             <div class="stats-panel">
                 <h3>📊 ESTADÍSTICAS EN TIEMPO REAL</h3>
                 <div id="liveStats"></div>
+                <button class="cache-btn" onclick="admin.forzarActualizacionSW()">
+                    🔄 Forzar Actualización Service Worker
+                </button>
             </div>
         </div>
 
@@ -632,7 +657,7 @@
                 root.style.setProperty('--color-texto', document.getElementById('colorTexto').value);
                 root.style.setProperty('--color-grupo-header', document.getElementById('colorGrupoHeader').value);
                 root.style.setProperty('--color-grupo-items', document.getElementById('colorGrupoItems').value);
-                root.style.setProperty('--color-item-fondo', document.getElementById('colorItemFondo').value + '1a'); // Agrega transparencia
+                root.style.setProperty('--color-item-fondo', document.getElementById('colorItemFondo').value + '1a');
                 root.style.setProperty('--color-pendiente', document.getElementById('colorPendiente').value);
                 root.style.setProperty('--color-chango', document.getElementById('colorChango').value);
             },
@@ -765,7 +790,7 @@
                 
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'lista_super_backup.json';
+                a.download = `lista_super_backup_${new Date().toISOString().split('T')[0]}.json`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
@@ -777,6 +802,7 @@
             limpiarTodo: function() {
                 if(confirm('¿ESTÁS SEGURO? Se borrarán TODOS los datos.')) {
                     localStorage.removeItem('superListGroups');
+                    localStorage.removeItem('theListSupperColors');
                     alert('🗑️ ¡Todo limpiado! Recargando...');
                     setTimeout(() => location.reload(), 1000);
                 }
@@ -818,6 +844,59 @@
                 localStorage.setItem('superListGroups', JSON.stringify(gruposEjemplo));
                 alert('🏪 ¡Grupos de ejemplo creados! Recargando...');
                 setTimeout(() => location.reload(), 1000);
+            },
+
+            // NUEVA FUNCIÓN: LIMPIAR CACHE
+            limpiarCache: function() {
+                if(confirm('¿Limpiar cache del navegador? Esto solucionará problemas de versiones viejas.')) {
+                    // Limpiar caches del Service Worker
+                    if ('caches' in window) {
+                        caches.keys().then(cacheNames => {
+                            cacheNames.forEach(cacheName => {
+                                console.log('🗑️ Eliminando cache:', cacheName);
+                                caches.delete(cacheName);
+                            });
+                        });
+                    }
+                    
+                    // Desregistrar Service Workers
+                    if ('serviceWorker' in navigator) {
+                        navigator.serviceWorker.getRegistrations().then(registrations => {
+                            registrations.forEach(registration => {
+                                registration.unregister();
+                                console.log('🔧 Service Worker desregistrado');
+                            });
+                        });
+                    }
+                    
+                    // Limpiar localStorage de cache (opcional)
+                    // localStorage.removeItem('theListSupperColors');
+                    
+                    alert('✅ Cache limpiado. La app se recargará.');
+                    setTimeout(() => {
+                        // Forzar recarga sin cache
+                        window.location.href = window.location.href + '?nocache=' + Date.now();
+                    }, 1000);
+                }
+            },
+
+            // NUEVA FUNCIÓN: FORZAR ACTUALIZACIÓN SW
+            forzarActualizacionSW: function() {
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.ready.then(registration => {
+                        // Enviar mensaje para saltar fase de espera
+                        if (registration.waiting) {
+                            registration.waiting.postMessage('skipWaiting');
+                            alert('🔄 Service Worker actualizado. Recargando...');
+                            setTimeout(() => location.reload(), 500);
+                        } else {
+                            registration.update();
+                            alert('🔍 Buscando actualizaciones...');
+                        }
+                    });
+                } else {
+                    alert('ℹ️ Service Worker no soportado en este navegador');
+                }
             }
         };
 
@@ -889,7 +968,14 @@
                 }
             });
 
-            console.log('🚀 The List Supper™ cargado - SIN PERMISOS MOLESTOS!');
+            // Forzar actualización del Service Worker al cargar
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.ready.then(registration => {
+                    registration.update();
+                });
+            }
+
+            console.log('🚀 The List Supper™ v2025.1 cargado');
         });
 
         // Renderizar grupos
@@ -1199,10 +1285,17 @@
             localStorage.setItem('superListGroups', JSON.stringify(groups));
         }
 
-        // Service Worker SIN notificaciones molestas
+        // Service Worker con control de cache mejorado
         if('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js')
-                .then(registration => console.log('✅ Service Worker registrado (sin permisos)'))
+                .then(registration => {
+                    console.log('✅ Service Worker registrado v2025.1');
+                    
+                    // Check for updates periódicamente
+                    setInterval(() => {
+                        registration.update();
+                    }, 60 * 60 * 1000); // Cada hora
+                })
                 .catch(error => console.log('❌ Error Service Worker:', error));
         }
     </script>
